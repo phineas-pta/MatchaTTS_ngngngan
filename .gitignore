@@ -1,3 +1,10 @@
+*.ckpt
+*.safetensors
+*.onnx
+g_02500000
+generator_v1
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

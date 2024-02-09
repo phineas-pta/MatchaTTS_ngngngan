@@ -4,7 +4,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import AvgPool1d, Conv1d, Conv2d, ConvTranspose1d
-from torch.nn.utils import remove_weight_norm, spectral_norm, weight_norm
+from torch.nn.utils import remove_weight_norm, spectral_norm
+from torch.nn.utils.parametrizations import weight_norm
 
 from .xutils import get_padding, init_weights
 
@@ -98,9 +99,11 @@ class ResBlock1(torch.nn.Module):
 
     def remove_weight_norm(self):
         for l in self.convs1:
-            remove_weight_norm(l)
+            try: remove_weight_norm(l)  # weird thing with huggingface space cpu-only
+            except: pass
         for l in self.convs2:
-            remove_weight_norm(l)
+            try: remove_weight_norm(l)  # weird thing with huggingface space cpu-only
+            except: pass
 
 
 class ResBlock2(torch.nn.Module):
@@ -142,7 +145,8 @@ class ResBlock2(torch.nn.Module):
 
     def remove_weight_norm(self):
         for l in self.convs:
-            remove_weight_norm(l)
+            try: remove_weight_norm(l)  # weird thing with huggingface space cpu-only
+            except: pass
 
 
 class Generator(torch.nn.Module):
@@ -199,11 +203,14 @@ class Generator(torch.nn.Module):
     def remove_weight_norm(self):
         print("Removing weight norm...")
         for l in self.ups:
-            remove_weight_norm(l)
+            try: remove_weight_norm(l)  # weird thing with huggingface space cpu-only
+            except: pass
         for l in self.resblocks:
             l.remove_weight_norm()
-        remove_weight_norm(self.conv_pre)
-        remove_weight_norm(self.conv_post)
+        try: remove_weight_norm(self.conv_pre)
+        except: pass
+        try: remove_weight_norm(self.conv_post)
+        except: pass
 
 
 class DiscriminatorP(torch.nn.Module):
